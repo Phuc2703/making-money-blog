@@ -220,4 +220,110 @@
                 });
             });
         });
-        
+        // Thêm tính năng sắp xếp bảng (optional)
+document.addEventListener('DOMContentLoaded', function() {
+  const table = document.querySelector('.comparison-table');
+  if (table) {
+    const headers = table.querySelectorAll('th');
+    headers.forEach((header, index) => {
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', () => {
+        sortTable(table, index);
+      });
+    });
+  }
+});
+
+function sortTable(table, column) {
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const isAsc = tbody.getAttribute('data-sort') === `asc-${column}`;
+
+  rows.sort((a, b) => {
+    const aText = a.cells[column].textContent.trim();
+    const bText = b.cells[column].textContent.trim();
+    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+  });
+
+  rows.forEach(row => tbody.appendChild(row));
+  tbody.setAttribute('data-sort', isAsc ? `desc-${column}` : `asc-${column}`);
+}
+// Xử lý nút thêm đánh giá
+document.getElementById('add-review-btn')?.addEventListener('click', () => {
+  const name = prompt("Tên của bạn:");
+  if (name) {
+    const reviewText = prompt("Nhận xét của bạn:");
+    const stars = prompt("Đánh giá (1-5 sao):");
+    
+    if (reviewText && stars) {
+      addNewReview(name, reviewText, stars);
+      alert("Cảm ơn đánh giá của bạn!");
+    }
+  }
+});
+
+function addNewReview(name, text, stars) {
+  const reviewsGrid = document.querySelector('.reviews-grid');
+  if (!reviewsGrid) return;
+
+  const reviewCard = document.createElement('div');
+  reviewCard.className = 'review-card';
+  reviewCard.innerHTML = `
+    <div class="reviewer-info">
+      <img src="https://i.pravatar.cc/80?img=${Math.floor(Math.random() * 70)}" alt="User Avatar" class="avatar">
+      <div class="reviewer-meta">
+        <span class="name">${name}</span>
+        <div class="stars">${'★'.repeat(stars)}${'☆'.repeat(5 - stars)} <span class="date">(${new Date().toLocaleDateString()})</span></div>
+      </div>
+    </div>
+    <p class="review-text">"${text}"</p>
+  `;
+
+  reviewsGrid.prepend(reviewCard);
+}
+// Mobile Menu Functionality
+const mobileToggle = document.querySelector('.mobile-menu-toggle');
+const headerContainer = document.querySelector('.header-container');
+const navLinks = document.querySelectorAll('.nav-link');
+
+mobileToggle?.addEventListener('click', () => {
+  headerContainer.classList.toggle('mobile-active');
+  document.body.style.overflow = headerContainer.classList.contains('mobile-active') ? 'hidden' : '';
+});
+
+// Close mobile menu when clicking a link
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (headerContainer.classList.contains('mobile-active')) {
+      headerContainer.classList.remove('mobile-active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+
+// Smooth dropdown for mobile
+const dropdowns = document.querySelectorAll('.dropdown');
+dropdowns.forEach(dropdown => {
+  const link = dropdown.querySelector('.nav-link');
+  link.addEventListener('click', (e) => {
+    if (window.innerWidth <= 992) {
+      e.preventDefault();
+      const menu = dropdown.querySelector('.dropdown-menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+  });
+});
+
+// Sticky Header Effect
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('.affiliate-header');
+  if (window.scrollY > 10) {
+    header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+    header.style.background = 'rgba(255, 255, 255, 0.98)';
+    header.style.backdropFilter = 'blur(5px)';
+  } else {
+    header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
+    header.style.background = '#ffffff';
+    header.style.backdropFilter = 'none';
+  }
+});
